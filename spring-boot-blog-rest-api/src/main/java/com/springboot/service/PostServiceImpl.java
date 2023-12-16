@@ -3,8 +3,12 @@ package com.springboot.service;
 import com.springboot.entity.Post;
 import com.springboot.exception.ResourceNotFoundException;
 import com.springboot.payload.PostDto;
+import com.springboot.payload.PostResponse;
 import com.springboot.repository.PostRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
@@ -31,15 +35,45 @@ public class PostServiceImpl implements PostService{
         return convertPost(savedPost);
     }
 
-    @Override
-    public List<PostDto> getAllPosts() {
-        List<Post> allPosts = postRepository.findAll();
+   /* @Override
+    public List<PostDto> getAllPosts(int pageNo, int pageSize) {        //refer notes for it
+        //create page instance
+        Pageable pageable = PageRequest.of(pageNo, pageSize);
+        Page<Post> posts = postRepository.findAll(pageable);
+
+        //get content for page Object
+        List<Post> allPost = posts.getContent();
+
+        // List<Post> allPosts = postRepository.findAll();
         //Converts allPosts into PostDto Object
         //need to use stream api to convert all post into dtos
-        return allPosts.stream().map(post -> convertPost(post)).collect(Collectors.toList());
-    }
+        return allPost.stream().map(post -> convertPost(post)).collect(Collectors.toList());
+    }*/
 
     @Override
+    public PostResponse getAllPosts(int pageNo, int pageSize) {
+        //create pageable instance
+        Pageable pageable = PageRequest.of(pageNo, pageSize);
+
+      Page<Post> posts = postRepository.findAll(pageable);
+       // it returns a Page object containing a subset of entities based on the pagination information.
+
+        //get content for page object
+        List<PostDto> content = posts.stream().map(post -> convertPost(post)).collect(Collectors.toList());
+
+        PostResponse postResponse = new PostResponse();
+        postResponse.setContent(content);
+        postResponse.setPageNo(posts.getNumber());
+        postResponse.setPageSize(posts.getSize());
+        postResponse.setTotalElement(posts.getTotalElements());
+        postResponse.setTotalPages(posts.getTotalPages());
+        postResponse.setLast(posts.isLast());
+
+        return postResponse;
+
+    }
+
+        @Override
     public PostDto findPostById(long postId) {
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new ResourceNotFoundException("Post with id: "+postId+" Not Available"));

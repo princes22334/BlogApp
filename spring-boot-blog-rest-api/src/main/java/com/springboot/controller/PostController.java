@@ -1,6 +1,7 @@
 package com.springboot.controller;
 
 import com.springboot.payload.PostDto;
+import com.springboot.payload.PostResponse;
 import com.springboot.service.PostService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -30,9 +31,17 @@ public class PostController {
     }
 
     //create api to get all posts
-    @GetMapping("/getAll")
+    /*@GetMapping("/getAll")
     public List<PostDto> getAllPosts(){
         return postService.getAllPosts();
+    }*/
+    //adding pagination Support
+    // http://localhost:8080/api/posts/getall?pageSize=5&pageNumber=1
+    @GetMapping("/getAll")
+    public PostResponse getAllPosts(
+            @RequestParam(name="pageNo", defaultValue = "0", required = false) int pageNo,
+            @RequestParam(name = "pageSize", defaultValue = "10", required = false) int pageSize) {
+        return postService.getAllPosts(pageNo, pageSize);
     }
 
     //create api to get postDto by id
