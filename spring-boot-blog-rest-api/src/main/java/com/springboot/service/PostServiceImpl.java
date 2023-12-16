@@ -61,6 +61,13 @@ public class PostServiceImpl implements PostService{
         return updatedDto;
     }
 
+    @Override
+    public void deletePostById(long id) {
+        //First I need to retrieve entity by id just to check id is available or not
+        postRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException(id + ": Id Not Found"));
+        postRepository.deleteById(id); //or postRepository.delete(post)
+    }
+
     //Convert PostDto into Post Entity
     public Post convertPostDto(PostDto postDto){
         Post post = new Post();
