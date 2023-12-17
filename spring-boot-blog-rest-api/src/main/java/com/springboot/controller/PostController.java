@@ -3,6 +3,7 @@ package com.springboot.controller;
 import com.springboot.payload.PostDto;
 import com.springboot.payload.PostResponse;
 import com.springboot.service.PostService;
+import com.springboot.utils.AppConstants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -36,12 +37,23 @@ public class PostController {
         return postService.getAllPosts();
     }*/
     //adding pagination Support
-    // http://localhost:8080/api/posts/getall?pageSize=5&pageNumber=1
-    @GetMapping("/getAll")
+    // http://localhost:8080/api/posts/getAll?pageSize=5&pageNumber=1
+   /* @GetMapping("/getAll")
     public PostResponse getAllPosts(
             @RequestParam(name="pageNo", defaultValue = "0", required = false) int pageNo,
             @RequestParam(name = "pageSize", defaultValue = "10", required = false) int pageSize) {
         return postService.getAllPosts(pageNo, pageSize);
+    }*/
+
+    // http://localhost:8080/api/posts/getAll?pageSize=5&pageNumber=1&sortBy=title
+    @GetMapping("/getAll")
+    public PostResponse getAllPosts(
+            @RequestParam(name="pageNo", defaultValue = AppConstants.DEFAULT_PAGE_NUMBER, required = false) int pageNo,
+            @RequestParam(name = "pageSize", defaultValue = AppConstants.DEFAULT_PAGE_SIZE, required = false) int pageSize,
+            @RequestParam(name="sortBy", defaultValue = AppConstants.DEFAULT_SORT_BY, required = false) String sortBy,
+            @RequestParam(name="sprtDir", defaultValue = AppConstants.DEFAULT_SORT_DIRECTION, required = false)String sortDir) {
+
+        return postService.getAllPosts(pageNo, pageSize, sortBy, sortDir);
     }
 
     //create api to get postDto by id

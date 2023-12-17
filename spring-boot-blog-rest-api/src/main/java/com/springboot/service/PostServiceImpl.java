@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
@@ -51,9 +52,12 @@ public class PostServiceImpl implements PostService{
     }*/
 
     @Override
-    public PostResponse getAllPosts(int pageNo, int pageSize) {
+    public PostResponse getAllPosts(int pageNo, int pageSize, String sortBy, String sortDir) {
+
+        Sort sort = sortBy.equalsIgnoreCase(Sort.Direction.ASC.name())?Sort.by(sortBy).ascending()
+                : Sort.by(sortBy).descending();
         //create pageable instance
-        Pageable pageable = PageRequest.of(pageNo, pageSize);
+        Pageable pageable = PageRequest.of(pageNo, pageSize, sort);  //Here Sort is class which is dynamically taking values here
 
       Page<Post> posts = postRepository.findAll(pageable);
        // it returns a Page object containing a subset of entities based on the pagination information.

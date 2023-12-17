@@ -17,4 +17,5 @@ public class ResourceGlobalExceptionHandling {
         error.setTimeStamp(System.currentTimeMillis());
         return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
     }
+
 }
