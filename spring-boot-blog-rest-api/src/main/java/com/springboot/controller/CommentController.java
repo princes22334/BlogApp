@@ -29,12 +29,31 @@ public class CommentController {
         return new ResponseEntity<>(comment, HttpStatus.CREATED);
     }
 
-    //create rest api to get all comments
+    //create rest api to get all comments by postId
    // http://localhost:8080/api/posts/1/comments
     @GetMapping("/posts/{postId}")
     public List<CommentDto> getCommentByPostId(@PathVariable("postId") Long postId){
         return commentService.getCommentsByPostId(postId);
     }
+
+    //create restAPi to get comments by comment id
+    @GetMapping("/posts/{postId}/comments/{commentId}")
+    public ResponseEntity<CommentDto> getCommentById(
+            @PathVariable("postId") Long postId,
+            @PathVariable("commentId") Long commentId){
+        CommentDto comments = commentService.getCommentById(postId, commentId);
+        return new ResponseEntity<>(comments, HttpStatus.OK);
+    }
+
+    @PutMapping("/posts/{postId}/comments/{commentId}")
+    public ResponseEntity<CommentDto> updateComment(
+            @PathVariable("postId") Long postId,
+            @PathVariable("commentId") Long commentId,
+            @RequestBody CommentDto commentDto){
+        CommentDto dto =  commentService.updateComment(postId, commentId, commentDto);
+        return new ResponseEntity<>(dto, HttpStatus.OK);
+    }
+
 
 
 

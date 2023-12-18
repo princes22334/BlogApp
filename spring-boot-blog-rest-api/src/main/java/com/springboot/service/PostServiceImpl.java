@@ -5,6 +5,7 @@ import com.springboot.exception.ResourceNotFoundException;
 import com.springboot.payload.PostDto;
 import com.springboot.payload.PostResponse;
 import com.springboot.repository.PostRepository;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -20,20 +21,22 @@ import java.util.stream.Collectors;
 @Service
 public class PostServiceImpl implements PostService{
     private final PostRepository postRepository;
+    private ModelMapper modelMapper;
+
     //Constructor based dependencies injection
-    @Autowired
-    public PostServiceImpl(PostRepository postRepository) {
+    public PostServiceImpl(PostRepository postRepository, ModelMapper modelMapper) {
         this.postRepository = postRepository;
+        this.modelMapper = modelMapper;
     }
 
     @Override
     public PostDto createPost(PostDto postDto) {
        //convert PostDto  into Post
-        Post post = convertPostDto(postDto);
+        Post post = maptoEntity(postDto);
         Post savedPost = postRepository.save(post);
 
         //Convert Post into PostDto to return to Client
-        return convertPost(savedPost);
+        return mapToDto(savedPost);
     }
 
    /* @Override
@@ -63,7 +66,7 @@ public class PostServiceImpl implements PostService{
        // it returns a Page object containing a subset of entities based on the pagination information.
 
         //get content for page object
-        List<PostDto> content = posts.stream().map(post -> convertPost(post)).collect(Collectors.toList());
+        List<PostDto> content = posts.stream().map(post -> mapToDto(post)).collect(Collectors.toList());
 
         PostResponse postResponse = new PostResponse();
         postResponse.setContent(content);
@@ -82,7 +85,7 @@ public class PostServiceImpl implements PostService{
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new ResourceNotFoundException("Post with id: "+postId+" Not Available"));
         //here we use supplier Functional Interface because we are not providing any input but still generating output
-        return convertPost(post);
+        return mapToDto(post);
 
     }
     @Override
@@ -95,7 +98,7 @@ public class PostServiceImpl implements PostService{
        post.setDescription(postDto.getDescription());
        post.setContent(postDto.getContent());
       Post updatedPost = postRepository.save(post);
-        PostDto updatedDto = convertPost(updatedPost);
+        PostDto updatedDto = mapToDto(updatedPost);
         return updatedDto;
     }
 
@@ -106,22 +109,34 @@ public class PostServiceImpl implements PostService{
         postRepository.deleteById(id); //or postRepository.delete(post)
     }
 
-    //Convert PostDto into Post Entity
-    public Post convertPostDto(PostDto postDto){
-        Post post = new Post();
-        //post.setId(postDto.getId());  no need because id is auto increment
-        post.setTitle(postDto.getTitle());
-        post.setDescription(postDto.getDescription());
-        post.setContent(postDto.getContent());
+    //Using ModelMapper for converting PostDto into post Emtity
+    private PostDto mapToDto(Post post){
+        PostDto dto = modelMapper.map(post, PostDto.class);
+        return dto;
+    }
+    //Using ModelMapper to Convert Post Entity into PostDto
+    private Post maptoEntity(PostDto dto){
+        Post post = modelMapper.map(dto, Post.class);
         return post;
     }
+
     //Convert Post into DTO
-    public PostDto convertPost(Post post){
+    /*public PostDto convertPost(Post post){
         PostDto dto = new PostDto();
         dto.setId(post.getId());
         dto.setTitle(post.getTitle());
         dto.setDescription(post.getDescription());
         dto.setContent(post.getContent());
         return dto;
-    }
+    }*/
+
+    //Convert PostDto into Post Entity
+   /* public Post convertPostDto(PostDto postDto){
+        Post post = new Post();
+        //post.setId(postDto.getId());  no need because id is auto increment
+        post.setTitle(postDto.getTitle());
+        post.setDescription(postDto.getDescription());
+        post.setContent(postDto.getContent());
+        return post;
+    }*/
 }

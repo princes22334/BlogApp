@@ -10,5 +10,5 @@ public interface CommentRepository extends JpaRepository<Comment, Long> {
     //@Repository and @Transactional so no need to add @Repository
 
     //custom query method
-    List<Comment> findByPostId(long postId);
+    List<Comment> findByPostId(Long postId);
 }

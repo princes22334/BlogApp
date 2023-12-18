@@ -1,13 +1,16 @@
 package com.springboot.entity;
 
 import jakarta.persistence.*;
-import lombok.Data;
+import lombok.*;
 
 import java.util.HashSet;
 import java.util.Set;
 
 @Entity
-@Data
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 @Table(name="posts", uniqueConstraints = {@UniqueConstraint(columnNames = {"title"})})
 //unique constrains we use to make table unique
 public class Post {
